@@ -1,5 +1,3 @@
-# lingoflow
-Aplicativo para aprender idiomas 
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
