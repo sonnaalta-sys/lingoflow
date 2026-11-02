@@ -32,8 +32,11 @@
       <div class="flex items-center gap-2">
         <i class="fa-solid fa-brain text-emerald-400 text-xl sm:text-2xl"></i>
         <div>
-          <h1 class="text-base sm:text-xl font-bold tracking-tight leading-none">LingoFlow <span class="text-emerald-400">AI</span></h1>
-          <span id="streak-badge" class="text-[10px] text-amber-400 font-medium"><i class="fa-solid fa-fire"></i> 0 dias ativos</span>
+          <div class="flex items-center gap-1.5">
+            <h1 class="text-base sm:text-xl font-bold tracking-tight leading-none">LingoFlow <span class="text-emerald-400">AI</span></h1>
+            <span id="current-level-badge" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">A1</span>
+          </div>
+          <span id="streak-badge" class="text-[10px] text-amber-400 font-medium"><i class="fa-solid fa-fire"></i> 0 dias estudados</span>
         </div>
       </div>
 
@@ -60,7 +63,7 @@
 
   <!-- Banner de Status Offline -->
   <div id="offline-banner" class="hidden bg-amber-500/20 border-b border-amber-500/40 text-amber-200 text-xs text-center py-1.5 px-4">
-    <i class="fa-solid fa-wifi-slash mr-1"></i> Modo Offline: Você pode consultar seu Vault de Revisões e Imersão. Novas respostas da IA exigem internet.
+    <i class="fa-solid fa-wifi-slash mr-1"></i> Modo Offline: Lições teóricas, Imersão e Vault continuam disponíveis.
   </div>
 
   <!-- Modal de Configurações, Modelos e Backup -->
@@ -79,18 +82,18 @@
       <div class="space-y-2">
         <label class="text-xs font-bold uppercase tracking-wider text-emerald-400 block">1. Sua Chave Pessoal do Gemini</label>
         <p class="text-xs text-slate-400">
-          Gere gratuitamente no <b>Google AI Studio</b> (aistudio.google.com). Cada usuário usa a própria chave no seu aparelho.
+          Gere gratuitamente no <b>Google AI Studio</b> (aistudio.google.com). Aceita tanto chaves novas (<code>AQ...</code>) quanto clássicas (<code>AIza...</code>).
         </p>
-        <input type="password" id="api-key-input" placeholder="Cole sua chave AIzaSy... aqui" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:border-emerald-500 text-white">
+        <input type="password" id="api-key-input" placeholder="Cole sua chave do AI Studio aqui..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:border-emerald-500 text-white">
         
         <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer pt-1">
           <input type="checkbox" id="remember-key-checkbox" checked class="rounded border-slate-700 text-emerald-500 focus:ring-emerald-500 bg-slate-950">
-          Lembrar minha chave neste celular (desmarque se o aparelho for compartilhado)
+          Lembrar minha chave neste celular
         </label>
 
         <div class="flex gap-2 pt-1">
           <button id="btn-save-key" type="button" class="flex-1 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold rounded-xl text-xs transition">
-            Salvar Chave
+            Salvar Configuração
           </button>
           <button id="btn-remove-key" type="button" class="px-3 py-2 bg-rose-950/60 hover:bg-rose-900/60 border border-rose-700/40 text-rose-300 rounded-xl text-xs transition">
             Remover Chave
@@ -98,28 +101,28 @@
         </div>
       </div>
 
-      <!-- Seção 2: Escolha do Modelo -->
+      <!-- Seção 2: Escolha do Modelo (Atualizado para geração 3.8 / 3.6 / 3.5) -->
       <div class="space-y-2 border-t border-slate-800 pt-3">
         <div class="flex items-center justify-between">
-          <label class="text-xs font-bold uppercase tracking-wider text-emerald-400">2. Modelo Gemini</label>
+          <label class="text-xs font-bold uppercase tracking-wider text-emerald-400">2. Modelo Gemini (Plano Gratuito)</label>
           <button id="btn-fetch-models" type="button" class="text-xs text-emerald-400 hover:underline flex items-center gap-1">
             <i class="fa-solid fa-arrows-rotate"></i> Consultar disponíveis
           </button>
         </div>
         <select id="model-select" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-500">
-          <option value="gemini-2.5-flash">gemini-2.5-flash (Recomendado)</option>
-          <option value="gemini-2.0-flash">gemini-2.0-flash</option>
-          <option value="gemini-1.5-flash">gemini-1.5-flash</option>
-          <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+          <option value="gemini-3.8-flash">gemini-3.8-flash (Padrão Atual - Gratuito)</option>
+          <option value="gemini-3.6-flash">gemini-3.6-flash (Gratuito)</option>
+          <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (Leve / Cota Extra)</option>
+          <option value="gemini-2.5-flash">gemini-2.5-flash (Apenas chaves antigas)</option>
         </select>
         <p id="model-status-msg" class="text-[11px] text-slate-400"></p>
       </div>
 
-      <!-- Seção 3: Backup do Progresso (Sem Chave API) -->
+      <!-- Seção 3: Backup do Progresso -->
       <div class="space-y-2 border-t border-slate-800 pt-3">
         <label class="text-xs font-bold uppercase tracking-wider text-emerald-400 block">3. Backup do Seu Progresso</label>
         <p class="text-xs text-slate-400">
-          Exporte suas conversas, revisões do Vault e dias estudados para guardar ou transferir de celular (sua chave API não é incluída no arquivo).
+          Exporte seu nível, lições concluídas, conversas e revisões do Vault (sem incluir sua chave de API).
         </p>
         <div class="flex gap-2">
           <button id="btn-export-backup" type="button" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-medium flex items-center justify-center gap-1.5">
@@ -134,66 +137,117 @@
     </div>
   </div>
 
-  <!-- Navegação de Abas -->
-  <nav class="max-w-4xl mx-auto w-full px-4 pt-3 flex gap-2">
-    <button id="tab-btn-conversation" type="button" class="flex-1 py-2 rounded-xl border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5">
+  <!-- Navegação de Abas (4 Abas: Lições, Conversa, Imersão, Vault) -->
+  <nav class="max-w-4xl mx-auto w-full px-3 pt-3 grid grid-cols-4 gap-1.5">
+    <button id="tab-btn-lessons" type="button" class="py-2 rounded-xl border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 text-[11px] sm:text-sm font-semibold flex items-center justify-center gap-1">
+      <i class="fa-solid fa-graduation-cap"></i> Lições
+    </button>
+    <button id="tab-btn-conversation" type="button" class="py-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 text-[11px] sm:text-sm font-semibold flex items-center justify-center gap-1">
       <i class="fa-solid fa-microphone"></i> Conversa
     </button>
-    <button id="tab-btn-media" type="button" class="flex-1 py-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5">
+    <button id="tab-btn-media" type="button" class="py-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 text-[11px] sm:text-sm font-semibold flex items-center justify-center gap-1">
       <i class="fa-solid fa-film"></i> Imersão
     </button>
-    <button id="tab-btn-vault" type="button" class="flex-1 py-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5">
+    <button id="tab-btn-vault" type="button" class="py-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 text-[11px] sm:text-sm font-semibold flex items-center justify-center gap-1">
       <i class="fa-solid fa-layer-group"></i> Vault (<span id="vault-count">0</span>)
     </button>
   </nav>
 
   <!-- Conteúdo Principal -->
-  <main class="max-w-4xl mx-auto w-full flex-1 p-4 flex flex-col justify-between">
+  <main class="max-w-4xl mx-auto w-full flex-1 p-3 sm:p-4 flex flex-col justify-between">
 
-    <!-- ABA 1: CONVERSAÇÃO -->
-    <section id="tab-conversation" class="flex-1 flex flex-col gap-3">
+    <!-- ABA 1: TRILHA DE LIÇÕES & NIVELAMENTO INICIAL -->
+    <section id="tab-lessons" class="flex-1 flex flex-col gap-3">
+      <!-- Card de Nivelamento Rápido -->
+      <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Seu Nível em <span id="lesson-lang-name">Inglês</span>:</span>
+            <span id="lesson-level-pill" class="text-xs font-bold bg-emerald-500 text-slate-950 px-2 py-0.5 rounded-lg">A1 - Iniciante</span>
+          </div>
+          <p class="text-xs text-slate-400 mt-1">
+            Faça o diagnóstico rápido para descobrir seu ponto de partida ou altere manualmente.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <select id="manual-level-select" class="bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-2 text-xs text-slate-200">
+            <option value="A1">A1 • Iniciante Zero/Básico</option>
+            <option value="A2">A2 • Básico Sobrevivência</option>
+            <option value="B1">B1 • Intermediário</option>
+            <option value="B2">B2 • Independente/Avançado</option>
+          </select>
+          <button id="btn-start-quiz" type="button" class="px-3 py-2 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 rounded-xl text-xs font-semibold whitespace-nowrap">
+            <i class="fa-solid fa-compass mr-1"></i> Fazer Teste
+          </button>
+        </div>
+      </div>
+
+      <!-- Container do Questionário de Nivelamento (Oculto por padrão) -->
+      <div id="quiz-container" class="hidden bg-slate-900 border border-emerald-500/40 p-4 rounded-2xl space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold text-emerald-400"><i class="fa-solid fa-clipboard-question mr-1"></i> Avaliação Rápida de Nível</h3>
+          <button id="btn-close-quiz" type="button" class="text-xs text-slate-400 hover:text-white">Cancelar</button>
+        </div>
+        <div id="quiz-question-box" class="space-y-2"></div>
+      </div>
+
+      <!-- Lista de Lições Estruturadas do Nível Atual -->
+      <div class="space-y-2.5 overflow-y-auto max-h-[60vh] pr-1" id="lessons-list"></div>
+    </section>
+
+    <!-- ABA 2: CONVERSAÇÃO -->
+    <section id="tab-conversation" class="hidden flex-1 flex-col gap-3">
       <!-- Cenário Ativo -->
       <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-2xl flex items-center justify-between">
         <div class="flex items-center gap-2 overflow-hidden flex-1">
-          <span class="text-xs font-semibold bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-lg whitespace-nowrap">Cenário:</span>
+          <span class="text-xs font-semibold bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-lg whitespace-nowrap">Modo:</span>
           <select id="scenario-select" class="bg-transparent text-xs sm:text-sm font-medium focus:outline-none cursor-pointer truncate w-full text-slate-100">
-            <option value="adaptive_interview" class="bg-slate-900">Nivelamento & Bate-papo Adaptativo</option>
-            <option value="cafe" class="bg-slate-900">Pedir algo em uma cafeteria / bistrô</option>
-            <option value="travel" class="bg-slate-900">Aeroporto, Hotel e Direções</option>
-            <option value="shopping" class="bg-slate-900">Compras e Negociação no Mercado</option>
-            <option value="media_discuss" class="bg-slate-900">Debater um filme, série ou música</option>
+            <option value="lesson_practice" class="bg-slate-900">📚 Prática Guiada da Lição Atual</option>
+            <option value="adaptive_interview" class="bg-slate-900">🎙️ Bate-papo Adaptativo Livre</option>
+            <option value="cafe" class="bg-slate-900">☕ Pedir em uma cafeteria / restaurante</option>
+            <option value="travel" class="bg-slate-900">✈️ Aeroporto, Hotel e Direções</option>
+            <option value="shopping" class="bg-slate-900">🛍️ Compras e Negociação</option>
+            <option value="media_discuss" class="bg-slate-900">🎬 Debater um filme, série ou música</option>
           </select>
         </div>
-        <button id="btn-clear-chat" type="button" class="text-xs text-slate-400 hover:text-rose-400 whitespace-nowrap ml-2" title="Reiniciar conversa deste idioma">
+        <button id="btn-clear-chat" type="button" class="text-xs text-slate-400 hover:text-rose-400 whitespace-nowrap ml-2" title="Reiniciar conversa">
           <i class="fa-solid fa-rotate-right"></i> Limpar
         </button>
       </div>
 
+      <!-- Banner da Lição Ativa na Conversa -->
+      <div id="active-lesson-banner" class="hidden bg-emerald-950/40 border border-emerald-500/30 p-2.5 rounded-xl text-xs text-emerald-200 flex items-center justify-between gap-2">
+        <div id="active-lesson-banner-text" class="truncate"></div>
+        <button id="btn-finish-lesson" type="button" class="px-2.5 py-1 bg-emerald-500 text-slate-950 font-bold rounded-lg text-[11px] whitespace-nowrap">
+          Concluir Lição ✓
+        </button>
+      </div>
+
       <!-- Feed de Conversa e Correção -->
-      <div id="chat-messages" class="flex-1 overflow-y-auto space-y-3 max-h-[50vh] pr-1 select-text"></div>
+      <div id="chat-messages" class="flex-1 overflow-y-auto space-y-3 max-h-[48vh] pr-1 select-text"></div>
 
       <!-- Controles de Voz + Entrada de Texto Alternativa -->
-      <div class="pt-3 flex flex-col items-center gap-2.5 border-t border-slate-800/80">
+      <div class="pt-2 flex flex-col items-center gap-2 border-t border-slate-800/80">
         <div id="listening-indicator" class="text-xs text-rose-400 font-semibold tracking-wider uppercase hidden">
           <i class="fa-solid fa-circle text-[8px] animate-ping mr-1"></i> Ouvindo e transcrevendo sua fala...
         </div>
 
-        <div class="flex items-center gap-3 w-full">
+        <div class="flex items-center gap-2 w-full">
           <input type="text" id="text-input" placeholder="Ou digite sua frase aqui..." class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-500">
-          <button id="btn-send-text" type="button" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs sm:text-sm font-semibold transition" title="Enviar texto">
+          <button id="btn-send-text" type="button" class="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs sm:text-sm font-semibold transition" title="Enviar texto">
             <i class="fa-solid fa-paper-plane"></i>
           </button>
-          <button id="mic-btn" type="button" class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 flex items-center justify-center text-xl shadow-lg transition flex-shrink-0" title="Falar pelo microfone">
+          <button id="mic-btn" type="button" class="w-12 h-12 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 flex items-center justify-center text-xl shadow-lg transition flex-shrink-0" title="Falar pelo microfone">
             <i class="fa-solid fa-microphone"></i>
           </button>
         </div>
         <p class="text-[11px] text-slate-500 text-center">
-          Toque no microfone para transcrever sua voz ou digite no campo acima.
+          Toque no microfone para falar ou digite acima.
         </p>
       </div>
     </section>
 
-    <!-- ABA 2: IMERSÃO EM MÍDIA -->
+    <!-- ABA 3: IMERSÃO EM MÍDIA -->
     <section id="tab-media" class="hidden flex-1 space-y-4">
       <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl">
         <h2 class="text-base font-bold mb-1 flex items-center gap-2">
@@ -230,7 +284,7 @@
       </div>
     </section>
 
-    <!-- ABA 3: VAULT DE ERROS -->
+    <!-- ABA 4: VAULT DE ERROS -->
     <section id="tab-vault" class="hidden flex-1 space-y-3">
       <div class="flex items-center justify-between gap-2">
         <div>
