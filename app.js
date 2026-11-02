@@ -480,14 +480,21 @@
     quizStep = 0;
     quizScore = 0;
     const quizContainer = document.getElementById('quiz-container');
-    if (!quizContainer) return;
+    if (!quizContainer) {
+      alert("Elemento do quiz não encontrado na página.");
+      return;
+    }
     
+    // Remove a classe de ocultação e força exibição em bloco
     quizContainer.classList.remove('hidden');
-    renderQuizStep();
+    quizContainer.style.display = 'block';
     
-    // Rola a tela suavemente para a caixa do teste aparecer imediatamente no celular
+    renderQuizStep();
     quizContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
+
+  // Torna acessível diretamente pelo clique do botão no HTML
+  window.startPlacementQuiz = startPlacementQuiz;
 
   function renderQuizStep() {
     const lang = appState.currentLang;
