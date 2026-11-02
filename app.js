@@ -479,8 +479,14 @@
   function startPlacementQuiz() {
     quizStep = 0;
     quizScore = 0;
-    document.getElementById('quiz-container').classList.remove('hidden');
+    const quizContainer = document.getElementById('quiz-container');
+    if (!quizContainer) return;
+    
+    quizContainer.classList.remove('hidden');
     renderQuizStep();
+    
+    // Rola a tela suavemente para a caixa do teste aparecer imediatamente no celular
+    quizContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   function renderQuizStep() {
