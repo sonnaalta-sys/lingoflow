@@ -1,11 +1,258 @@
-<!doctype html>
-<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LingoFlow AI</title><style>
-:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#020617;color:#e2e8f0;font:16px system-ui}main{max-width:850px;margin:auto;padding:18px}h1,a{color:#34d399}.row,nav{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}button,input,select{font:inherit;background:#0f172a;color:inherit;padding:12px;border:1px solid #334155;border-radius:12px}button{cursor:pointer}button:hover{border-color:#34d399}button:disabled{opacity:.5}.grow{flex:1;min-width:120px}.card{background:#0f172a;border:1px solid #334155;border-radius:14px;padding:14px;margin:10px 0;white-space:pre-wrap;overflow-wrap:anywhere}.user{background:#064e3b;margin-left:12%}#messages{height:42vh;overflow:auto}small{display:block;color:#94a3b8;line-height:1.6}#status{color:#fcd34d;min-height:24px}dialog{background:#0f172a;color:inherit;border:1px solid #334155;border-radius:16px;max-width:530px;width:94%}dialog::backdrop{background:#000b}dialog input,dialog select{width:100%;margin:10px 0}[hidden]{display:none!important}li{margin:12px 0}label{display:block;margin:12px 0}
-</style><script src="./app.js" defer></script></head><body><main>
-<h1>LingoFlow AI</h1><div class="row"><select id="language" aria-label="Idioma"><option value="en">🇺🇸 Inglês</option><option value="fr">🇫🇷 Francês</option><option value="tr">🇹🇷 Turco</option></select><button id="settings">⚙ Minha chave</button></div><small>Cada pessoa usa sua própria chave Gemini. Não há contas nem sincronização entre aparelhos.</small>
-<nav aria-label="Seções"><button data-tab="conversation">Conversa</button><button data-tab="media">Imersão</button><button data-tab="vault">Memória (<span id="count">0</span>)</button></nav>
-<section id="conversation"><div class="row"><select id="scenario" class="grow" aria-label="Cenário"><option>Bate-papo adaptativo</option><option>Cafeteria</option><option>Aeroporto e imigração</option><option>Filmes e músicas</option></select><button id="reset">Nova conversa</button></div><div id="messages" role="log" aria-live="polite"></div><form id="form" class="row"><input id="text" class="grow" maxlength="4000" placeholder="Digite no idioma escolhido…" aria-label="Mensagem" required><button id="send">Enviar</button><button id="mic" type="button">🎤 Falar</button></form><label><input id="autoplay" type="checkbox" checked> Ler respostas em voz alta</label><button id="stop">Parar áudio</button><small>A fala é transcrita pelo navegador. Somente o texto vai ao Gemini: não há avaliação de pronúncia. Reconhecimento e vozes dependem do navegador e do idioma.</small></section>
-<section id="media" hidden><h2>Imersão diária</h2><ol><li>Escolha um vídeo curto no idioma estudado, com legendas nesse idioma. Consulte traduções quando precisar.</li><li>Pause uma frase e repita acompanhando ritmo e entonação.</li><li>Volte à Conversa, escolha Filmes e músicas e conte o que entendeu.</li></ol><p>Para turco, comece por diálogos cotidianos curtos com legendas em turco.</p></section>
-<section id="vault" hidden><h2>Banco de memória</h2><small>Revisões ficam neste navegador. Quem usa o mesmo perfil de navegador pode vê-las.</small><button id="clear-vault">Apagar revisões</button><div id="cards"></div></section><p id="status" role="status"></p>
-<dialog id="config" aria-labelledby="config-title"><h2 id="config-title">Sua chave Gemini</h2><p>Crie sua própria chave no <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio</a>.</p><small>A chave permanece apenas na memória desta página. Recarregar ou fechar exige inseri-la novamente. Ela é enviada diretamente ao Google, não ao GitHub. Nunca compartilhe sua chave. Esta versão pessoal não substitui um servidor seguro para produção. Cotas e cobrança dependem do projeto e do modelo.</small><label for="key">Chave de API</label><input id="key" type="password" autocomplete="off" spellcheck="false" placeholder="Cole sua própria chave"><button id="load">Usar chave e carregar modelos</button><label for="model">Modelo</label><select id="model"><option value="">Carregue os modelos primeiro</option></select><small>Listar um modelo não garante cota gratuita ou acesso à geração. Confira seus limites no AI Studio.</small><p id="config-status" role="status"></p><div class="row"><button id="forget">Remover minha chave</button><button id="close">Concluir</button></div></dialog>
-</main></body></html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#020617">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="LingoFlow AI">
+  <title>LingoFlow AI - Imersão & Conversação</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230f172a'/><text x='50%25' y='56%25' dominant-baseline='middle' text-anchor='middle' font-size='56'>🧠</text></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230f172a'/><text x='50%25' y='56%25' dominant-baseline='middle' text-anchor='middle' font-size='56'>🧠</text></svg>">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .pulse-mic {
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans select-none">
+
+  <!-- Topbar -->
+  <header class="border-b border-slate-800 bg-slate-900/60 backdrop-blur sticky top-0 z-50 px-3 py-3">
+    <div class="max-w-4xl mx-auto flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-brain text-emerald-400 text-xl sm:text-2xl"></i>
+        <div>
+          <h1 class="text-base sm:text-xl font-bold tracking-tight leading-none">LingoFlow <span class="text-emerald-400">AI</span></h1>
+          <span id="streak-badge" class="text-[10px] text-amber-400 font-medium"><i class="fa-solid fa-fire"></i> 0 dias ativos</span>
+        </div>
+      </div>
+
+      <!-- Seletor de Idioma (EN / FR / TR) -->
+      <div class="flex items-center gap-1.5">
+        <div class="bg-slate-800 p-1 rounded-xl flex gap-0.5">
+          <button id="lang-en" type="button" class="px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition bg-emerald-500 text-slate-950">
+            🇺🇸 EN
+          </button>
+          <button id="lang-fr" type="button" class="px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition text-slate-400 hover:text-white">
+            🇫🇷 FR
+          </button>
+          <button id="lang-tr" type="button" class="px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition text-slate-400 hover:text-white">
+            🇹🇷 TR
+          </button>
+        </div>
+        <button id="btn-open-config" type="button" class="text-slate-400 hover:text-white p-2 relative" title="Configurações e Backup">
+          <i class="fa-solid fa-gear text-lg"></i>
+          <span id="key-status-dot" class="w-2 h-2 rounded-full bg-rose-500 absolute top-1.5 right-1.5"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Banner de Status Offline -->
+  <div id="offline-banner" class="hidden bg-amber-500/20 border-b border-amber-500/40 text-amber-200 text-xs text-center py-1.5 px-4">
+    <i class="fa-solid fa-wifi-slash mr-1"></i> Modo Offline: Você pode consultar seu Vault de Revisões e Imersão. Novas respostas da IA exigem internet.
+  </div>
+
+  <!-- Modal de Configurações, Modelos e Backup -->
+  <div id="config-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 overflow-y-auto">
+    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl max-w-md w-full shadow-2xl space-y-4 my-auto">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-bold flex items-center gap-2">
+          <i class="fa-solid fa-sliders text-emerald-400"></i> Configurações & Dados
+        </h3>
+        <button id="btn-close-config" type="button" class="text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Seção 1: Chave API Pessoal -->
+      <div class="space-y-2">
+        <label class="text-xs font-bold uppercase tracking-wider text-emerald-400 block">1. Sua Chave Pessoal do Gemini</label>
+        <p class="text-xs text-slate-400">
+          Gere gratuitamente no <b>Google AI Studio</b> (aistudio.google.com). Cada usuário usa a própria chave no seu aparelho.
+        </p>
+        <input type="password" id="api-key-input" placeholder="Cole sua chave AIzaSy... aqui" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:border-emerald-500 text-white">
+        
+        <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer pt-1">
+          <input type="checkbox" id="remember-key-checkbox" checked class="rounded border-slate-700 text-emerald-500 focus:ring-emerald-500 bg-slate-950">
+          Lembrar minha chave neste celular (desmarque se o aparelho for compartilhado)
+        </label>
+
+        <div class="flex gap-2 pt-1">
+          <button id="btn-save-key" type="button" class="flex-1 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold rounded-xl text-xs transition">
+            Salvar Chave
+          </button>
+          <button id="btn-remove-key" type="button" class="px-3 py-2 bg-rose-950/60 hover:bg-rose-900/60 border border-rose-700/40 text-rose-300 rounded-xl text-xs transition">
+            Remover Chave
+          </button>
+        </div>
+      </div>
+
+      <!-- Seção 2: Escolha do Modelo -->
+      <div class="space-y-2 border-t border-slate-800 pt-3">
+        <div class="flex items-center justify-between">
+          <label class="text-xs font-bold uppercase tracking-wider text-emerald-400">2. Modelo Gemini</label>
+          <button id="btn-fetch-models" type="button" class="text-xs text-emerald-400 hover:underline flex items-center gap-1">
+            <i class="fa-solid fa-arrows-rotate"></i> Consultar disponíveis
+          </button>
+        </div>
+        <select id="model-select" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-500">
+          <option value="gemini-2.5-flash">gemini-2.5-flash (Recomendado)</option>
+          <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+          <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+          <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+        </select>
+        <p id="model-status-msg" class="text-[11px] text-slate-400"></p>
+      </div>
+
+      <!-- Seção 3: Backup do Progresso (Sem Chave API) -->
+      <div class="space-y-2 border-t border-slate-800 pt-3">
+        <label class="text-xs font-bold uppercase tracking-wider text-emerald-400 block">3. Backup do Seu Progresso</label>
+        <p class="text-xs text-slate-400">
+          Exporte suas conversas, revisões do Vault e dias estudados para guardar ou transferir de celular (sua chave API não é incluída no arquivo).
+        </p>
+        <div class="flex gap-2">
+          <button id="btn-export-backup" type="button" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-medium flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-download text-emerald-400"></i> Exportar JSON
+          </button>
+          <label class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-medium flex items-center justify-center gap-1.5 cursor-pointer">
+            <i class="fa-solid fa-upload text-sky-400"></i> Importar JSON
+            <input type="file" id="input-import-backup" accept=".json,application/json" class="hidden">
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navegação de Abas -->
+  <nav class="max-w-4xl mx-auto w-full px-4 pt-3 flex gap-2">
+    <button id="tab-btn-conversation" type="button" class="flex-1 py-2 rounded-xl border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5">
+      <i class="fa-solid fa-microphone"></i> Conversa
+    </button>
+    <button id="tab-btn-media" type="button" class="flex-1 py-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5">
+      <i class="fa-solid fa-film"></i> Imersão
+    </button>
+    <button id="tab-btn-vault" type="button" class="flex-1 py-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5">
+      <i class="fa-solid fa-layer-group"></i> Vault (<span id="vault-count">0</span>)
+    </button>
+  </nav>
+
+  <!-- Conteúdo Principal -->
+  <main class="max-w-4xl mx-auto w-full flex-1 p-4 flex flex-col justify-between">
+
+    <!-- ABA 1: CONVERSAÇÃO -->
+    <section id="tab-conversation" class="flex-1 flex flex-col gap-3">
+      <!-- Cenário Ativo -->
+      <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-2xl flex items-center justify-between">
+        <div class="flex items-center gap-2 overflow-hidden flex-1">
+          <span class="text-xs font-semibold bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-lg whitespace-nowrap">Cenário:</span>
+          <select id="scenario-select" class="bg-transparent text-xs sm:text-sm font-medium focus:outline-none cursor-pointer truncate w-full text-slate-100">
+            <option value="adaptive_interview" class="bg-slate-900">Nivelamento & Bate-papo Adaptativo</option>
+            <option value="cafe" class="bg-slate-900">Pedir algo em uma cafeteria / bistrô</option>
+            <option value="travel" class="bg-slate-900">Aeroporto, Hotel e Direções</option>
+            <option value="shopping" class="bg-slate-900">Compras e Negociação no Mercado</option>
+            <option value="media_discuss" class="bg-slate-900">Debater um filme, série ou música</option>
+          </select>
+        </div>
+        <button id="btn-clear-chat" type="button" class="text-xs text-slate-400 hover:text-rose-400 whitespace-nowrap ml-2" title="Reiniciar conversa deste idioma">
+          <i class="fa-solid fa-rotate-right"></i> Limpar
+        </button>
+      </div>
+
+      <!-- Feed de Conversa e Correção -->
+      <div id="chat-messages" class="flex-1 overflow-y-auto space-y-3 max-h-[50vh] pr-1 select-text"></div>
+
+      <!-- Controles de Voz + Entrada de Texto Alternativa -->
+      <div class="pt-3 flex flex-col items-center gap-2.5 border-t border-slate-800/80">
+        <div id="listening-indicator" class="text-xs text-rose-400 font-semibold tracking-wider uppercase hidden">
+          <i class="fa-solid fa-circle text-[8px] animate-ping mr-1"></i> Ouvindo e transcrevendo sua fala...
+        </div>
+
+        <div class="flex items-center gap-3 w-full">
+          <input type="text" id="text-input" placeholder="Ou digite sua frase aqui..." class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-500">
+          <button id="btn-send-text" type="button" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs sm:text-sm font-semibold transition" title="Enviar texto">
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+          <button id="mic-btn" type="button" class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 flex items-center justify-center text-xl shadow-lg transition flex-shrink-0" title="Falar pelo microfone">
+            <i class="fa-solid fa-microphone"></i>
+          </button>
+        </div>
+        <p class="text-[11px] text-slate-500 text-center">
+          Toque no microfone para transcrever sua voz ou digite no campo acima.
+        </p>
+      </div>
+    </section>
+
+    <!-- ABA 2: IMERSÃO EM MÍDIA -->
+    <section id="tab-media" class="hidden flex-1 space-y-4">
+      <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl">
+        <h2 class="text-base font-bold mb-1 flex items-center gap-2">
+          <i class="fa-solid fa-lightbulb text-amber-400"></i> Metodologia dos 3 Passos Diários
+        </h2>
+        <p class="text-xs text-slate-400 mb-3">
+          Prática ativa de 15 a 30 minutos com filmes, séries, vídeos e músicas:
+        </p>
+
+        <div class="grid grid-cols-1 gap-2.5">
+          <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+            <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Passo 1 • Input Compreensível</span>
+            <h4 class="font-semibold text-xs mt-0.5">Legenda no Idioma Estudado</h4>
+            <p class="text-xs text-slate-400 mt-1">Evite legendas em português. Assista com áudio e legenda em inglês, francês ou turco para conectar som e escrita.</p>
+          </div>
+          <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+            <span class="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Passo 2 • Técnica do Shadowing</span>
+            <h4 class="font-semibold text-xs mt-0.5">Repita como um Eco (3 min)</h4>
+            <p class="text-xs text-slate-400 mt-1">Pause uma frase curta do vídeo ou música e repita em voz alta imitando o ritmo, as pausas e a entonação original.</p>
+          </div>
+          <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+            <span class="text-[10px] font-bold text-sky-400 uppercase tracking-wider">Passo 3 • Produção Ativa</span>
+            <h4 class="font-semibold text-xs mt-0.5">Resumo na Aba Conversa</h4>
+            <p class="text-xs text-slate-400 mt-1">Escolha o cenário "Debater um filme, série ou música" e conte em 3 frases o que você acabou de assistir ou ouvir.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl">
+        <h3 class="text-sm font-bold mb-2 flex items-center gap-2">
+          <i class="fa-brands fa-youtube text-red-500"></i> Fontes Recomendadas (<span id="media-lang-label">EN</span>):
+        </h3>
+        <div id="media-resources" class="space-y-2 text-xs text-slate-300"></div>
+      </div>
+    </section>
+
+    <!-- ABA 3: VAULT DE ERROS -->
+    <section id="tab-vault" class="hidden flex-1 space-y-3">
+      <div class="flex items-center justify-between gap-2">
+        <div>
+          <h2 class="text-base font-bold">Banco de Memória (Offline)</h2>
+          <p class="text-xs text-slate-400">Suas correções gramaticais e frases naturais salvas neste aparelho.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <select id="vault-filter-lang" class="bg-slate-900 border border-slate-800 rounded-lg px-2 py-1 text-xs text-slate-300">
+            <option value="all">Todos</option>
+            <option value="en">🇺🇸 EN</option>
+            <option value="fr">🇫🇷 FR</option>
+            <option value="tr">🇹🇷 TR</option>
+          </select>
+          <button id="btn-clear-vault" type="button" class="text-xs text-rose-400 hover:underline">Limpar</button>
+        </div>
+      </div>
+
+      <div id="vault-list" class="space-y-2.5 overflow-y-auto max-h-[60vh] pr-1 select-text"></div>
+    </section>
+
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>
